@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Terminator · 运维助手</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<!-- 登录 -->
+<div id="login-view" class="login-wrap hidden">
+  <form id="login-form" class="login-card">
+    <div class="brand big"><span class="logo">▲</span> Terminator</div>
+    <p class="muted">Linux 运维 AI 助手</p>
+    <label>用户名<input name="username" autocomplete="username" required value="admin"></label>
+    <label>密码<input name="password" type="password" autocomplete="current-password" required autofocus></label>
+    <div id="login-error" class="error-text"></div>
+    <button class="btn primary block" type="submit">登录</button>
+  </form>
+</div>
+
+<!-- 主界面 -->
+<div id="app-view" class="layout hidden">
+  <aside class="sidebar">
+    <div class="brand"><span class="logo">▲</span> Terminator</div>
+    <nav class="nav">
+      <a data-tab="chat" class="active">💬 对话</a>
+      <a data-tab="hosts">🖥️ 服务器</a>
+      <a data-tab="apps">🚀 应用发版</a>
+      <a data-tab="audit">📜 审计日志</a>
+    </nav>
+    <div class="side-section" id="conv-section">
+      <div class="side-title">
+        <span>历史对话</span>
+        <button class="btn tiny" id="new-conv">＋ 新对话</button>
+      </div>
+      <ul id="conv-list" class="conv-list"></ul>
+    </div>
+    <div class="side-footer">
+      <div id="llm-status" class="muted small"></div>
+      <div class="row-between">
+        <span id="me" class="muted small"></span>
+        <button class="btn tiny ghost" id="logout">退出</button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <!-- 对话 -->
+    <section id="tab-chat" class="tab active">
+      <div id="messages" class="messages">
+        <div id="welcome" class="welcome">
+          <h1>今天要处理什么问题？</h1>
+          <p class="muted">描述现象即可，我会登录服务器收集证据、定位原因。修改类操作会先请你确认。</p>
+          <div class="examples">
+            <button class="example">检查所有服务器的磁盘、内存和负载情况</button>
+            <button class="example">nginx 报 502 了，帮我排查一下</button>
+            <button class="example">找出 CPU 占用最高的进程，分析是否异常</button>
+            <button class="example">看看最近一小时有没有 OOM 或内核报错</button>
+          </div>
+        </div>
+      </div>
+      <div class="composer">
+        <div class="composer-inner">
+          <textarea id="input" rows="1" placeholder="描述你的问题，Enter 发送，Shift+Enter 换行"></textarea>
+          <button id="send" class="btn primary">发送</button>
+          <button id="stop" class="btn danger hidden">停止</button>
+        </div>
+        <div class="composer-hint muted small">只读命令自动执行 · 修改类命令需审批 · 高危命令直接拦截</div>
+      </div>
+    </section>
+
+    <!-- 服务器 -->
+    <section id="tab-hosts" class="tab">
+      <div class="page-head">
+        <h2>服务器</h2>
+        <button class="btn primary" id="add-host">＋ 添加服务器</button>
+      </div>
+      <table class="table">
+        <thead><tr><th>名称</th><th>地址</th><th>认证</th><th>标签</th><th>描述</th><th></th></tr></thead>
+        <tbody id="host-rows"></tbody>
+      </table>
+    </section>
+
+    <!-- 应用 -->
+    <section id="tab-apps" class="tab">
+      <div class="page-head">
+        <h2>应用发版</h2>
+        <button class="btn primary" id="add-app">＋ 添加应用</button>
+      </div>
+      <div id="app-cards" class="cards"></div>
+      <h3 class="section-title">发版记录</h3>
+      <table class="table">
+        <thead><tr><th>#</th><th>应用</th><th>操作</th><th>版本</th><th>状态</th><th>触发者</th><th>时间</th><th></th></tr></thead>
+        <tbody id="dep-rows"></tbody>
+      </table>
+    </section>
+
+    <!-- 审计 -->
+    <section id="tab-audit" class="tab">
+      <div class="page-head">
+        <h2>审计日志</h2>
+        <button class="btn" id="refresh-audit">刷新</button>
+      </div>
+      <table class="table">
+        <thead><tr><th>时间</th><th>来源</th><th>主机</th><th>命令</th><th>风险</th><th>决定</th><th>退出码</th></tr></thead>
+        <tbody id="audit-rows"></tbody>
+      </table>
+    </section>
+  </main>
+</div>
+
+<!-- 弹窗 -->
+<div id="modal" class="modal hidden">
+  <div class="modal-card">
+    <div class="modal-head"><h3 id="modal-title"></h3><button class="btn tiny ghost" id="modal-close">✕</button></div>
+    <div id="modal-body" class="modal-body"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script src="/static/markdown.js"></script>
+<script src="/static/app.js"></script>
+</body>
+</html>
